@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.6" />
+    <PackageReference Include="Microsoft.Orleans.Clustering.Redis" Version="10.1.0" />
+    <PackageReference Include="Microsoft.Orleans.Dashboard" Version="10.1.0" />
+    <PackageReference Include="Microsoft.Orleans.Persistence.Redis" Version="10.1.0" />
+    <PackageReference Include="Microsoft.Orleans.Server" Version="10.1.0" />
+    <PackageReference Include="Microsoft.Orleans.Streaming.Redis" Version="10.1.0-alpha.1" />
+    <PackageReference Include="MySqlConnector" Version="2.3.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Orleans.Storage.Application\Orleans.Storage.Application.csproj" />
+    <ProjectReference Include="..\Orleans.Storage.Persistence.StateHandler\Orleans.Storage.Persistence.StateHandler.csproj" />
+  </ItemGroup>
+
+</Project>

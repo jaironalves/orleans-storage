@@ -1,0 +1,6 @@
+@Orleans.Storage.API_HostAddress = http://localhost:5221
+
+GET {{Orleans.Storage.API_HostAddress}}/car/abc123
+Accept: application/json
+
+###

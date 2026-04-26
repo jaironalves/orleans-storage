@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Orleans.Storage.API/Orleans.Storage.API.csproj" Id="a1092f31-a10d-418f-9c17-934d1545ee93" />
+    <Project Path="src/Orleans.Storage.Application/Orleans.Storage.Application.csproj" Id="681140a9-2aba-4690-a3ab-5813de2ebfec" />
+    <Project Path="src/Orleans.Storage.Persistence.StateHandler/Orleans.Storage.Persistence.StateHandler.csproj" />
+  </Folder>
+</Solution>
