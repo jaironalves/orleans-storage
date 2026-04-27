@@ -6,11 +6,11 @@ using System.Data;
 
 namespace Orleans.Storage.Application.StateHandler.States;
 
-public class CarStateHandler(StateHandlerContext _, IDbConnection dbConnection) : IStateHandler<CarState>
+public class CarStateHandler(StateHandlerContext context, IDbConnection dbConnection) : StateHandlerBase<CarState>(context)
 {
     private readonly IDbConnection _dbConnection = dbConnection ?? throw new ArgumentNullException(nameof(dbConnection));
 
-    public async Task ReadAsync(string grainType, GrainId grainId, IGrainState<CarState> grainState)
+    public override async Task ReadAsync(string grainType, GrainId grainId, IGrainState<CarState> grainState)
     {
         try
         {
@@ -42,7 +42,7 @@ public class CarStateHandler(StateHandlerContext _, IDbConnection dbConnection) 
         }
     }
 
-    public async Task WriteAsync(string grainType, GrainId grainId, IGrainState<CarState> grainState)
+    public override async Task WriteAsync(string grainType, GrainId grainId, IGrainState<CarState> grainState)
     {
         try
         {
@@ -71,7 +71,7 @@ public class CarStateHandler(StateHandlerContext _, IDbConnection dbConnection) 
         }
     }
 
-    public async Task ClearAsync(string grainType, GrainId grainId, IGrainState<CarState> grainState)
+    public override async Task ClearAsync(string grainType, GrainId grainId, IGrainState<CarState> grainState)
     {
         try
         {

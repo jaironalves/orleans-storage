@@ -26,9 +26,9 @@ public static class OrleansExtensions
                 var connection = ConnectionMultiplexer.Connect(redisOptions);
                 return connection;
             })
-            .AddSingleton<IDbConnection>(_ => new MySqlConnection(mysqlConnectionString))
+            .AddSingleton<IDbConnection>(_ => new MySqlConnection(mysqlConnectionString));
             //.AddSingleton<IStateHandlerFactory, StateHandlerFactory>()
-            .AddSingleton<IStateHandler<CarState>, CarStateHandler>();
+            //.AddSingleton<IStateHandler<CarState>, CarStateHandler>();
 
         builder.UseOrleans(siloBuilder =>
         {

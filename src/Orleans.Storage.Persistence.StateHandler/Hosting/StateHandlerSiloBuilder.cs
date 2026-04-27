@@ -21,7 +21,7 @@ public class StateHandlerSiloBuilder(ISiloBuilder siloBuilder, string name) :
     /// <typeparam name="TState">The type of state that the handler will manage.</typeparam>
     /// <typeparam name="THandler">The type of the state handler to register.</typeparam>    
     public StateHandlerSiloBuilder AddStateHandler<TState, THandler>()
-        where THandler : class, IStateHandler<TState>
+        where THandler : StateHandlerBase<TState>
     {
         var handlerType = typeof(THandler);
 
@@ -30,9 +30,7 @@ public class StateHandlerSiloBuilder(ISiloBuilder siloBuilder, string name) :
         Services.Configure<StateHandlerGrainStorageOptions>(name, options =>
         {
             options.Handlers[typeof(TState)] = handlerType;
-        });
-
-        Services.TryAddScoped<IStateHandler<TState>, THandler>();
+        });        
 
         return this;
     }
