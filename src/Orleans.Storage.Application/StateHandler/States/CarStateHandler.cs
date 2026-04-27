@@ -1,11 +1,12 @@
 using Dapper;
 using Orleans.Storage.Application.Grains.Car.States;
 using Orleans.Storage.Persistence.StateHandler.Abstractions;
+using Orleans.Storage.Persistence.StateHandler.Storage;
 using System.Data;
 
 namespace Orleans.Storage.Application.StateHandler.States;
 
-public class CarStateHandler(IDbConnection dbConnection) : IStateHandler<CarState>
+public class CarStateHandler(StateHandlerContext _, IDbConnection dbConnection) : IStateHandler<CarState>
 {
     private readonly IDbConnection _dbConnection = dbConnection ?? throw new ArgumentNullException(nameof(dbConnection));
 

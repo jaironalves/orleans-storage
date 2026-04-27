@@ -26,9 +26,15 @@ internal class StateHandlerFactory(
                 throw new InvalidOperationException(
                     $"Handler não registrado para {t.Name}");
 
+            var handlerContext = new StateHandlerContext
+            {   
+                ProviderName = providerName
+            };
+
             return ActivatorUtilities.CreateInstance(
                 serviceProvider,
-                handlerType);
+                handlerType,
+                handlerContext);
         });
     }
 }
