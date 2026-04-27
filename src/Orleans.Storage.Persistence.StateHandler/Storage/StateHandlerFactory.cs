@@ -28,8 +28,7 @@ internal class StateHandlerFactory(
 
             return ActivatorUtilities.CreateInstance(
                 serviceProvider,
-                handlerType,
-                providerName);
+                handlerType);
         });
     }
 }

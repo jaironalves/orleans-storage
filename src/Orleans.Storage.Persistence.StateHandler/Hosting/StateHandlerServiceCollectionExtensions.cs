@@ -7,14 +7,14 @@ using Orleans.Storage.Persistence.StateHandler.Abstractions;
 using Orleans.Storage.Persistence.StateHandler.Options;
 using Orleans.Storage.Persistence.StateHandler.Storage;
 
-namespace Orleans.Storage.Persistence.StateHandler.Extensions;
+namespace Orleans.Storage.Persistence.StateHandler.Hosting;
 
 internal static class StateHandlerServiceCollectionExtensions
 {
     /// <summary>
     /// Configures StateHandler as a grain storage provider.
     /// </summary>
-    public static IServiceCollection AddStateHandlerGrainStorage(this IServiceCollection services, string name, Action<OptionsBuilder<StateHandlerGrainStorageOptions>>? configureOptions = null)
+    internal static IServiceCollection AddStateHandlerGrainStorage(this IServiceCollection services, string name, Action<OptionsBuilder<StateHandlerGrainStorageOptions>>? configureOptions = null)
     {
         configureOptions?.Invoke(services.AddOptions<StateHandlerGrainStorageOptions>(name));
         services.ConfigureNamedOptionForLogging<StateHandlerGrainStorageOptions>(name);
@@ -26,15 +26,7 @@ internal static class StateHandlerServiceCollectionExtensions
                 .Get(name);
 
             return new StateHandlerFactory(sp, name, options);
-        });
-
-        services.Configure<StateHandlerGrainStorageOptions>(name, options =>
-        {
-            foreach (var handlerType in options.Handlers.Values)
-            {
-                services.TryAddScoped(handlerType);
-            }
-        });
+        });       
 
         return services.AddGrainStorage(name, StateHandlerGrainStorageFactory.Create);
     }

@@ -6,8 +6,8 @@ using MySqlConnector;
 using System.Data;
 using Orleans.Storage.Application.Grains.Car.States;
 using Orleans.Storage.Application.StateHandler.States;
-using Orleans.Storage.Persistence.StateHandler.Extensions;
 using Orleans.Storage.Application.StateHandler;
+using Orleans.Storage.Persistence.StateHandler.Hosting;
 
 namespace Orleans.Storage.API.Extensions;
 
@@ -61,11 +61,8 @@ public static class OrleansExtensions
                         options.ConfigurationOptions = redisOptions;
                     });
                 })
-                .AddStateHandlerGrainStorage("state-handler-storage", options =>
-                {
-                    options
-                        .AddStateHandler<CarState, CarStateHandler>();
-                })
+                .AddStateHandlerGrainStorage("state-handler-storage")
+                .AddStateHandler<CarState, CarStateHandler>()
                 .AddDashboard();
         });
 
