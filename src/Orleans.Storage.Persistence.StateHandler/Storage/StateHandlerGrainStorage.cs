@@ -5,7 +5,7 @@ using Orleans.Storage.Persistence.StateHandler.Abstractions;
 
 namespace Orleans.Storage.Persistence.StateHandler.Storage;
 
-public class StateHandlerGrainStorage(
+internal class StateHandlerGrainStorage(
     string name,
     ClusterOptions clusterOptions,
     IStateHandlerFactory handlerFactory,

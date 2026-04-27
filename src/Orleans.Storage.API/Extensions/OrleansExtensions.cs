@@ -27,7 +27,7 @@ public static class OrleansExtensions
                 return connection;
             })
             .AddSingleton<IDbConnection>(_ => new MySqlConnection(mysqlConnectionString))
-            .AddSingleton<IStateHandlerFactory, StateHandlerFactory>()
+            //.AddSingleton<IStateHandlerFactory, StateHandlerFactory>()
             .AddSingleton<IStateHandler<CarState>, CarStateHandler>();
 
         builder.UseOrleans(siloBuilder =>
@@ -61,7 +61,11 @@ public static class OrleansExtensions
                         options.ConfigurationOptions = redisOptions;
                     });
                 })
-                .AddStateHandlerGrainStorage("state-handler-storage")
+                .AddStateHandlerGrainStorage("state-handler-storage", options =>
+                {
+                    options
+                        .AddStateHandler<CarState, CarStateHandler>();
+                })
                 .AddDashboard();
         });
 

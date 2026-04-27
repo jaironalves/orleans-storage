@@ -26,8 +26,14 @@ public class CarStateHandler(IDbConnection dbConnection) : IStateHandler<CarStat
             if (car is not null)
             {
                 grainState.State = car;
+                grainState.RecordExists = true;
                 grainState.ETag = GenerateETag(car);
+                return;
             }
+
+            grainState.State = new CarState();
+            grainState.RecordExists = false;
+            grainState.ETag = null;
         }
         catch (Exception ex)
         {

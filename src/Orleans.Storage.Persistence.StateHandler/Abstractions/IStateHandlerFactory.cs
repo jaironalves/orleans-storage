@@ -1,6 +1,6 @@
 ﻿namespace Orleans.Storage.Persistence.StateHandler.Abstractions;
 
-public interface IStateHandlerFactory
+internal interface IStateHandlerFactory
 {
     IStateHandler<TState> Get<TState>();    
 }
