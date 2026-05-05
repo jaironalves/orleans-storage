@@ -8,8 +8,7 @@ namespace Orleans.Storage.Persistence.StateHandler.Storage;
 internal class StateHandlerGrainStorage(
     string name,
     ClusterOptions clusterOptions,
-    IStateHandlerFactory handlerFactory,
-    IActivatorProvider activatorProvider,    
+    IStateHandlerFactory handlerFactory,    
     ILogger<StateHandlerGrainStorage> logger) : IGrainStorage, ILifecycleParticipant<ISiloLifecycle>
 {
     public void Participate(ISiloLifecycle lifecycle)
@@ -43,6 +42,4 @@ internal class StateHandlerGrainStorage(
         var handler = handlerFactory.Get<T>();
         return handler.ClearAsync(grainType, grainId, grainState);
     }
-
-    private T CreateInstance<T>() => activatorProvider.GetActivator<T>().Create();
 }

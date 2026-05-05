@@ -8,7 +8,9 @@
 
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.72" />
+    <PackageReference Include="Microsoft.Orleans.Reminders" Version="10.1.0" />
     <PackageReference Include="Microsoft.Orleans.Runtime" Version="10.1.0" />
+    <PackageReference Include="Microsoft.Orleans.Streaming" Version="10.1.0" />
   </ItemGroup>
 
   <ItemGroup>

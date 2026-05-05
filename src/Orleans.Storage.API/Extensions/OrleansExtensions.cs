@@ -61,8 +61,10 @@ public static class OrleansExtensions
                         options.ConfigurationOptions = redisOptions;
                     });
                 })
-                .AddStateHandlerGrainStorage("state-handler-storage")
-                .AddStateHandler<CarState, CarStateHandler>()
+                .AddStateHandlerGrainStorage("state-handler-storage", options =>
+                {
+                    options.AddStateHandler<CarState, CarStateHandler>();                    
+                })                
                 .AddDashboard();
         });
 
