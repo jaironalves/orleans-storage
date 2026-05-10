@@ -2,6 +2,7 @@ using Dapper;
 using Orleans.Storage.Application.Grains.Car.States;
 using Orleans.Storage.Persistence.StateHandler.Storage;
 using System.Data;
+using System.Numerics;
 
 namespace Orleans.Storage.Application.StateHandler.States;
 
@@ -13,21 +14,29 @@ public class CarStateHandler(StateHandlerContext context, IDbConnection dbConnec
     {
         try
         {
+            var graindIdKey = grainId.Key.ToString();
+
             const string query = @"
-                SELECT id, make, model, year
+                SELECT id, make, model, year, version
                 FROM car 
                 WHERE id = @Id";
 
-            var car = await _dbConnection.QueryFirstOrDefaultAsync<CarState>(
+            var carDb = await _dbConnection.QueryFirstOrDefaultAsync<(string Id, string Make, string Model, int Year, long Version)>(
                 query,
-                new { Id = grainId.Key.ToString() }
+                new { Id = graindIdKey }
             );
 
-            if (car is not null)
+            if (carDb.Id != null && graindIdKey.Equals(carDb.Id))
             {
-                grainState.State = car;
+                var (id, make, model, year, version) = carDb;
+                grainState.State = new CarState
+                {
+                    Make = make,
+                    Model = model,
+                    Year = year
+                };
                 grainState.RecordExists = true;
-                grainState.ETag = GenerateETag(car);
+                grainState.ETag = version.ToString();
                 return;
             }
 
@@ -43,26 +52,45 @@ public class CarStateHandler(StateHandlerContext context, IDbConnection dbConnec
 
     public override async Task WriteAsync(string grainType, GrainId grainId, IGrainState<CarState> grainState)
     {
+        const string UpdateQuery = @"
+        UPDATE car
+        SET make = @Make,
+            model = @Model,
+            year = @Year,
+            version = @NewVersion
+        WHERE id = @Id AND version = @CurrentVersion";
+
+        const string InsertQuery = @"
+        INSERT INTO car (id, make, model, year, version)
+        VALUES (@Id, @Make, @Model, @Year, @NewVersion)";
+
         try
         {
-            const string query = @"
-                INSERT INTO car (make, model, year, color, license_plate)
-                VALUES (@Make, @Model, @Year, @Color, @LicensePlate)
-                ON DUPLICATE KEY UPDATE
-                    make = VALUES(make),
-                    model = VALUES(model),
-                    year = VALUES(year),
-                    color = VALUES(color)";
+            var currentVersion = long.TryParse(grainState.ETag, out var v) ? v : 0;
+            var newVersion = currentVersion + 1;
+            bool isUpdate = grainState.RecordExists;
 
-            await _dbConnection.ExecuteAsync(query, new
+            string query = isUpdate ? UpdateQuery : InsertQuery;
+            string newEtag = newVersion.ToString();
+
+            var parameters = new Dictionary<string, object?>
             {
-                grainState.State.Make,
-                grainState.State.Model,
-                grainState.State.Year,                
-                LicensePlate = grainId.Key.ToString()
-            });
+                ["Id"] = grainId.Key.ToString(),
+                ["Make"] = grainState.State.Make,
+                ["Model"] = grainState.State.Model,
+                ["Year"] = grainState.State.Year,
+                ["NewVersion"] = newVersion
+            };
 
-            grainState.ETag = GenerateETag(grainState.State);
+            if (isUpdate)
+            {
+                parameters["CurrentVersion"] = currentVersion;                
+            }
+
+            var rowsAffected = await _dbConnection.ExecuteAsync(query, parameters);
+            if (rowsAffected == 0)
+                throw new StateHandlerInconsistentException("Concurrency conflict: state has been modified by another process.");
+            grainState.ETag = newEtag;
         }
         catch (Exception ex)
         {
