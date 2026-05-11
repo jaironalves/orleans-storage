@@ -4,3 +4,8 @@ GET {{Orleans.Storage.API_HostAddress}}/car/abc124
 Accept: application/json
 
 ###
+
+GET {{Orleans.Storage.API_HostAddress}}/dealership/abc124
+Accept: application/json
+
+###

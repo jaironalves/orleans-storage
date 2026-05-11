@@ -11,7 +11,7 @@ public class CarStateHandler(StateHandlerContext context, IDbConnection dbConnec
     private readonly IDbConnection _dbConnection = dbConnection ?? throw new ArgumentNullException(nameof(dbConnection));
 
     public override async Task ReadAsync(string grainType, GrainId grainId, IGrainState<CarState> grainState)
-    {
+    {        
         try
         {
             var graindIdKey = grainId.Key.ToString();
@@ -26,7 +26,7 @@ public class CarStateHandler(StateHandlerContext context, IDbConnection dbConnec
                 new { Id = graindIdKey }
             );
 
-            if (carDb.Id != null && graindIdKey.Equals(carDb.Id))
+            if (graindIdKey.Equals(carDb.Id))
             {
                 var (id, make, model, year, version) = carDb;
                 grainState.State = new CarState

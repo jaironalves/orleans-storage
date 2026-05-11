@@ -8,6 +8,7 @@ using Orleans.Storage.Application.Grains.Car.States;
 using Orleans.Storage.Application.StateHandler.States;
 using Orleans.Storage.Application.StateHandler;
 using Orleans.Storage.Persistence.StateHandler.Hosting;
+using Orleans.Storage.Application.Grains.Dealership.States;
 
 namespace Orleans.Storage.API.Extensions;
 
@@ -27,8 +28,8 @@ public static class OrleansExtensions
                 return connection;
             })
             .AddSingleton<IDbConnection>(_ => new MySqlConnection(mysqlConnectionString));
-            //.AddSingleton<IStateHandlerFactory, StateHandlerFactory>()
-            //.AddSingleton<IStateHandler<CarState>, CarStateHandler>();
+        //.AddSingleton<IStateHandlerFactory, StateHandlerFactory>()
+        //.AddSingleton<IStateHandler<CarState>, CarStateHandler>();
 
         builder.UseOrleans(siloBuilder =>
         {
@@ -63,8 +64,10 @@ public static class OrleansExtensions
                 })
                 .AddStateHandlerGrainStorage("state-handler-storage", options =>
                 {
-                    options.AddStateHandler<CarState, CarStateHandler>();                    
-                })                
+                    options
+                        .AddStateHandler<CarState, CarStateHandler>()
+                        .AddStateHandler<DealershipState, DealershipStateHandler>();
+                })
                 .AddDashboard();
         });
 
