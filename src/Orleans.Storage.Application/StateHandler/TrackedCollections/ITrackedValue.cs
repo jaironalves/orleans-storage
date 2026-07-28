@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Orleans.Storage.Application.StateHandler.TrackedCollections;
 
-public interface IDeepCloneable<T>
+public interface ITrackedValue<T>
 {
     T DeepClone();
 }

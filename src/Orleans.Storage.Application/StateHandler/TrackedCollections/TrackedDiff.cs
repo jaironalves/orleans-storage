@@ -1,6 +1,6 @@
 ﻿namespace Orleans.Storage.Application.StateHandler.TrackedCollections;
 
-public sealed class CollectionDiff<T>
+public sealed class TrackedDiff<T>
 {
     public List<T> Inserts { get; } = [];
 

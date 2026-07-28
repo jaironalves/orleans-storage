@@ -13,4 +13,12 @@ internal class DealershipGrain(
         var state = dealershipState.State;
         return state;
     }
+
+    public Task InitAsync()
+    {
+        dealershipState.State.Location = "Location";
+        dealershipState.State.City = "New York";
+        dealershipState.State.Cars.Add("Car1", new DealershipCarState { Model = "Model S", Make = "Tesla", Year = 2025 });
+        return dealershipState.WriteStateAsync();        
+    }
 }

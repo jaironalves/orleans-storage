@@ -113,6 +113,9 @@ public class DealershipStateHandler(StateHandlerContext context, IDbConnection d
             var rowsAffected = await _dbConnection.ExecuteAsync(query, parameters);
             if (rowsAffected == 0)
                 throw new StateHandlerInconsistentException("Concurrency conflict: state has been modified by another process.");
+
+            var diffs = grainState.State.Cars.Diff((car01, car02) => car01 != car02);
+
             grainState.ETag = newEtag;
         }
         catch (Exception ex)

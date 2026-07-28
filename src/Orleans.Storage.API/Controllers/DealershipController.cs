@@ -15,6 +15,8 @@ public class DealershipController(IGrainFactory grainFactory) : ControllerBase
     public async Task<ActionResult<DealershipState?>> Get(string id)
     {
         var grain = _grainFactory.GetGrain<IDealershipGrain>(id);
+        await grain.InitAsync();
+
         var state = await grain.GetStateAsync();
         if (state == null)
             return NotFound();

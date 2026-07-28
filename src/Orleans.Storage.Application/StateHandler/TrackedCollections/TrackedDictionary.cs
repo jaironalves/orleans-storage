@@ -8,7 +8,7 @@ namespace Orleans.Storage.Application.StateHandler.TrackedCollections;
 public class TrackedDictionary<TKey, TValue>
     : Dictionary<TKey, TValue>
     where TKey : notnull
-    where TValue : IDeepCloneable<TValue>
+    where TValue : ITrackedValue<TValue>
 {   
 
     [JsonIgnore]
@@ -23,10 +23,10 @@ public class TrackedDictionary<TKey, TValue>
             x => x.Value.DeepClone());
     }
 
-    public CollectionDiff<TValue> Diff(
+    public TrackedDiff<TValue> Diff(
         Func<TValue, TValue, bool> changed)
     {
-        var diff = new CollectionDiff<TValue>();
+        var diff = new TrackedDiff<TValue>();
 
         foreach (var (key, current) in this)
         {

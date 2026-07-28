@@ -7,4 +7,7 @@ public interface IDealershipGrain : IGrainWithStringKey
 {
     [Alias(nameof(GetStateAsync))]
     Task<DealershipState?> GetStateAsync();
+
+    [Alias(nameof(InitAsync))]
+    Task InitAsync();
 }

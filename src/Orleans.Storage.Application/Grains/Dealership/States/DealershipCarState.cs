@@ -4,7 +4,7 @@ namespace Orleans.Storage.Application.Grains.Dealership.States;
 
 [GenerateSerializer]
 [Alias(nameof(DealershipCarState))]
-public record DealershipCarState : IDeepCloneable<DealershipCarState>
+public record DealershipCarState : ITrackedValue<DealershipCarState>
 {
     [Id(0)]
     public string? Make { get; set; }
