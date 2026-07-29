@@ -3,6 +3,7 @@ using Orleans.Storage.Application.Grains.Dealership.States;
 using Orleans.Storage.Persistence.StateHandler.Storage;
 using System.Data;
 using System.Collections.Generic;
+using Orleans.Storage.Application.StateHandler.TrackedCollections;
 
 namespace Orleans.Storage.Application.StateHandler.States;
 
@@ -116,11 +117,74 @@ public class DealershipStateHandler(StateHandlerContext context, IDbConnection d
 
             var diffs = grainState.State.Cars.Diff((car01, car02) => car01 != car02);
 
+            // Apply changes to dealership_car table (inserts, updates, deletes)
+            if (diffs.HasChanges)
+            {
+                await ExecuteCarCommandsAsync(grainId.Key.ToString(), diffs);
+            }
+
             grainState.ETag = newEtag;
         }
         catch (Exception ex)
         {
             throw new Exception("Error writing dealership state to database", ex);
+        }
+    }
+
+    private async Task ExecuteCarCommandsAsync(string dealershipId, TrackedDiff<DealershipCarState> diffs)
+    {
+        const string insertQuery = @"
+            INSERT INTO dealership_car (dealership_id, id, make, model, year)
+            VALUES (@DealershipId, @Id, @Make, @Model, @Year)";
+
+        const string updateQuery = @"
+            UPDATE dealership_car
+            SET make = @Make,
+                model = @Model,
+                year = @Year
+            WHERE dealership_id = @DealershipId AND id = @Id";
+
+        const string deleteQuery = @"DELETE FROM dealership_car WHERE dealership_id = @DealershipId AND id = @Id";
+
+        _dbConnection.Open();
+        using var transaction = _dbConnection.BeginTransaction();
+        try
+        {
+            foreach (var car in diffs.Inserts)
+            {   
+                await _dbConnection.ExecuteAsync(insertQuery, new
+                {
+                    DealershipId = dealershipId,
+                    Id = car.Id,
+                    Make = car.Make,
+                    Model = car.Model,
+                    Year = car.Year
+                }, transaction);
+            }
+
+            foreach (var car in diffs.Updates)
+            {
+                await _dbConnection.ExecuteAsync(updateQuery, new
+                {
+                    DealershipId = dealershipId,
+                    Id = car.Id,
+                    Make = car.Make,
+                    Model = car.Model,
+                    Year = car.Year
+                }, transaction);
+            }
+
+            foreach (var car in diffs.Deletes)
+            {
+                await _dbConnection.ExecuteAsync(deleteQuery, new { DealershipId = dealershipId, Id = car.Id }, transaction);
+            }
+
+            transaction.Commit();
+        }
+        catch
+        {
+            transaction.Rollback();
+            throw;
         }
     }
 
